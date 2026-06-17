@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="UTF-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+		<title><%= file.name %></title>
+		<link rel="stylesheet" href="/style.css" />
+	</head>
+	<body>
+		<main id="file">
+			<h2><%= file.name %></h2>
+
+			<ul>
+				<li>
+					MIME Type:
+					<span class="value"> <%= file.mimetype %></span>
+				</li>
+				<li>
+					Size:
+					<span class="value">
+						<%= Math.trunc(+file.size / 1024) %> KB</span
+					>
+				</li>
+				<li>
+					Encoding:
+					<span class="value"> <%= file.encoding %></span>
+				</li>
+				<li>
+					Uploaded At:
+					<span class="value"> <%= file.uploadedAt %></span>
+				</li>
+			</ul>
+			<form
+				action="/file/<%= file.id %>/download/<%= file.supabaseName %>"
+				method="post"
+			>
+				<button type="submit">Download</button>
+			</form>
+		</main>
+	</body>
+</html>

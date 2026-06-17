@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Sign Up</title>
+    <link rel="stylesheet" href="/style.css" />
+
+  </head>
+  <body>
+    <main id="sign-up">
+      <h1>GE Drive</h1>
+      <h3>Sign Up </h3>
+
+      <form action="/sign-up" method="post">
+        <input
+          type="text"
+          name="name"
+          id="name"
+          placeholder="Joe Doe"
+          <%- include("snippets/formValue", { name: "name"}) %>
+          required
+        />
+        <%- include("snippets/formError",{name: "name"}) %>
+
+        <input
+          type="email"
+          name="email"
+          id="email"
+          placeholder="joedoe@gmail.com"
+          <%- include("snippets/formValue", { name: "email"}) %>
+          required
+        />
+        <%- include("snippets/formError",{name: "email"}) %>
+
+        <input
+          type="password"
+          name="password"
+          id="password"
+          placeholder="Password"
+          required
+        />
+        <%- include("snippets/formError",{name: "password"}) %>
+        <input
+          type="password"
+          
+          name="confirmPassword"
+          id="confirmPassword"
+          placeholder="Confirm Password"
+          required
+        />
+        <%- include("snippets/formError",{name: "confirmPassword"}) %>
+        <button type="submit">Sign Up</button>
+      </form>
+
+      <p class="auth-footer">
+        Already have an account?
+        <a href="/sign-in">Sign In</a>
+      </p>
+
+    </main>
+
+  </body>
+</html>

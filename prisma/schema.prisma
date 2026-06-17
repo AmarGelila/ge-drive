@@ -1,0 +1,54 @@
+generator client {
+  provider = "prisma-client-js"
+  output   = "../generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+model User {
+  id       Int      @id @default(autoincrement())
+  name     String   @db.VarChar(255)
+  email    String   @unique @db.VarChar(255)
+  password String?  @db.VarChar(255)
+  folders  Folder[]
+  files    File[]
+}
+
+model Folder {
+  id             Int      @id @default(autoincrement())
+  name           String   @db.VarChar(255)
+  subFolders     Folder[] @relation("FolderToFolder")
+  files          File[]
+  shareUrl       String   @default("") @db.VarChar(255)
+  user           User     @relation(fields: [userId], references: [id])
+  userId         Int
+  parentFolder   Folder?  @relation("FolderToFolder", fields: [parentFolderId], references: [id], onDelete: Cascade)
+  parentFolderId Int?
+}
+
+model File {
+  id             Int      @id @default(autoincrement())
+  name           String   @db.VarChar(255)
+  supabaseName   String   @db.VarChar(255)
+  size           Int
+  mimetype       String   @db.VarChar(255)
+  encoding       String   @db.VarChar(255)
+  uploadedAt     DateTime @default(now())
+  user           User     @relation(fields: [userId], references: [id])
+  userId         Int
+  folder         Folder   @relation(fields: [parentFolderId], references: [id], onDelete: Cascade)
+  parentFolderId Int
+}
+
+model Session {
+  id        String   @id @default(cuid())
+  sid       String   @unique
+  data      String
+  expiresAt DateTime
+}
+
+/**
+ * User Root Directory :- folder.find({parentFolderId: null , userId: user.id })
+ */

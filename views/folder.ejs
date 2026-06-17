@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="UTF-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+		<title> <%= folder.parentFolderId ? folder.name : "GE Drive" %> </title>
+        <link rel="stylesheet" href="/style.css">
+
+	</head>
+	<body>
+		<header>
+			<h1><a href="/">GE Drive</a></h1>
+			<a href="/sign-out">Sign Out</a>
+		</header>
+		<% if ( locals.errorMessage  ) { %>
+			<h2 class="errorMessage"><%= errorMessage %></h2>
+		<% } %>
+		<main id="folder">
+
+			<h2> <%= folder.parentFolderId && folder.name %></h2>
+			<% if ( subFolders.length > 0 || files.length > 0 ) { %>
+				<section>
+					<ul>
+						<% subFolders.forEach( ( subFolder ) => { %> 
+							<li class="folder">
+								<img src="/folder.png" alt="Folder Icon" width="50" height="50">	
+								<a href="/folder/<%= subFolder.id %>"> <%= subFolder.name %> </a> 
+								<form action="/folder/<%= folder.id %>/<%= subFolder.id %>" method="post">
+            	                    <input type="hidden" name="_method" value="DELETE">
+            	                    <button type="submit" title="Delete Item">Delete</button>
+            	                </form> 
+							</li> 
+						<% }) %>
+						<% files.forEach( ( file ) => { %> 
+							<li class="file"> 
+								<img src="/file.png" alt="File Icon" width="50" height="50">
+								<a href="/file/<%= file.id %>/"><%= file.name %> </a>
+							</li> 
+						<% }) %>
+					</ul>
+				</section>
+			<% } else if ( folder.parentFolderId ){%>
+				<h6> This folder is empty </h6>
+			<% } %>
+
+				<footer>
+
+					<section>
+						<form action="/folder/<%= folder.id %>/new" method="post">
+							<input
+								type="text"
+								name="newFolder"
+								id="newFolder"
+            		            placeholder="Folder Name"
+            		            minlength="1"
+								required
+							/>
+							<button type="submit">New Folder</button>
+						</form>
+					</section>
+
+					<section>
+						<form action="/file/<%= folder.id %>/upload-file" method="post" enctype="multipart/form-data">
+							<input type="file" name="file" id="file" required/>
+							<button type="submit">Upload</button>
+						</form>
+					</section>
+				</footer>
+			
+
+		</main>
+	</body>
+</html>

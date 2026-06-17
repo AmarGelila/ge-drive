@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="UTF-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+		<title>Sign In</title>
+		<link rel="stylesheet" href="/style.css">
+	</head>
+	<body>
+		<main id="sign-in">
+			<h1>GE Drive</h1>
+			<div>
+				<h4>Sign In</h4>
+				<form action="/sign-in" method="post">
+					<input
+          				type="email"
+          				name="email"
+          				id="email"
+          				placeholder="joedoe@gmail.com"
+          				<%- include("snippets/formValue", { name: "email"}) %>
+          				required
+        			/>
+        			<%- include("snippets/formError",{name: "email"}) %>
+
+					<input
+        			  	type="password"
+        			  	name="password"
+        			  	id="password"
+        			  	placeholder="Password"
+        			  	required
+        			/>
+        			<%- include("snippets/formError",{name: "password"}) %>
+
+					<button type="submit"> Sign In </button>
+				</form>
+
+				<p>Don't Have An Account? <a href="/sign-up">Sign Up</a></p>
+			</div>
+			<span>OR</span>
+			<div>
+				<h4>Sign In with your Google Account</h4>
+				<a href="/sign-in/google">Google</a>
+			</div>
+		</main>
+	</body>
+</html>
