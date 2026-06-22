@@ -5,15 +5,17 @@
 	"main": "app.js",
 	"type": "module",
 	"scripts": {
+		"postinstall": "prisma generate",
+		"vercel-build": "prisma generate",
 		"dev": "node --watch app.js",
-		"test": "echo \"Error: no test specified\" && exit 1",
-		"seed": "node 'prisma/seed.js'"
+		"start": "node app.js"
 	},
 	"keywords": [],
 	"author": "",
 	"license": "ISC",
 	"packageManager": "pnpm@10.28.2",
 	"dependencies": {
+		"prisma": "^7.8.0",
 		"@prisma/adapter-pg": "^7.8.0",
 		"@prisma/client": "^7.8.0",
 		"@prisma/client-runtime-utils": "^7.8.0",
@@ -32,9 +34,7 @@
 		"passport-google-oauth20": "^2.0.0",
 		"passport-local": "^1.0.0",
 		"pg": "^8.20.0",
+		"serverless-http": "^4.0.0",
 		"ws": "^8.21.0"
-	},
-	"devDependencies": {
-		"prisma": "^7.8.0"
 	}
 }

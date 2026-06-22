@@ -1,4 +1,5 @@
 import "dotenv/config";
+import serverless from "serverless-http";
 import express from "express";
 import passport from "passport";
 import path from "path";
@@ -99,8 +100,4 @@ app.use((err, req, res, next) => {
 	res.status(statusCode).redirect(redirectRoute);
 });
 
-const port = process.env.PORT || 3000;
-app.listen(port, (err) => {
-	if (err) throw err;
-	console.log(`Server running at port ${port}`);
-});
+export default serverless(app);

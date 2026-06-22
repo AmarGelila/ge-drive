@@ -21,7 +21,6 @@ model Folder {
   name           String   @db.VarChar(255)
   subFolders     Folder[] @relation("FolderToFolder")
   files          File[]
-  shareUrl       String   @default("") @db.VarChar(255)
   user           User     @relation(fields: [userId], references: [id])
   userId         Int
   parentFolder   Folder?  @relation("FolderToFolder", fields: [parentFolderId], references: [id], onDelete: Cascade)
@@ -48,7 +47,3 @@ model Session {
   data      String
   expiresAt DateTime
 }
-
-/**
- * User Root Directory :- folder.find({parentFolderId: null , userId: user.id })
- */
