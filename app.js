@@ -14,9 +14,24 @@ import folderRouter from "./routes/folder.js";
 import fileRouter from "./routes/file.js";
 
 const app = express();
+
+// Add timeout middleware for serverless environment
+const TIMEOUT = process.env.NODE_ENV === "production" ? 25000 : 30000; // 25 seconds for production
+app.use((req, res, next) => {
+	const timeout = setTimeout(() => {
+		if (!res.headersSent) {
+			res.status(503).send("Service Unavailable - Request Timeout");
+		}
+	}, TIMEOUT);
+
+	res.on("finish", () => clearTimeout(timeout));
+	res.on("close", () => clearTimeout(timeout));
+	next();
+});
+
 const sessionStore = new PrismaSessionStore(prisma, {
 	sessionModelName: "Session",
-	checkPeriod: 120000,
+	checkPeriod: 300000, // Increased to 5 minutes to reduce DB queries
 	dbRecordIdFunction: undefined,
 	dbRecordIdIsSessionId: true,
 });
@@ -100,4 +115,5 @@ app.use((err, req, res, next) => {
 	res.status(statusCode).redirect(redirectRoute);
 });
 
-export default serverless(app);
+const serverlessApp = serverless(app);
+export default serverlessApp;
