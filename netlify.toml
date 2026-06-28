@@ -1,0 +1,15 @@
+[build]
+  command = "npx prisma generate && npm run build"
+  publish = "public"        
+  functions = "netlify/functions"
+
+[functions]
+  node_bundler = "esbuild"  
+  external_node_modules = ["@prisma/client", "prisma"]
+
+# Redirect ALL traffic to your Express function
+[[redirects]]
+  from = "/*"
+  to = "/.netlify/functions/serverless/:splat"
+  status = 200
+  force = true
