@@ -1,7 +1,6 @@
 generator client {
-  provider        = "prisma-client-js"
-  previewFeatures = ["driverAdapters"]
-  output          = "../generated/prisma"
+  provider = "prisma-client-js"
+  output   = "../generated/prisma"
 }
 
 datasource db {
@@ -49,7 +48,3 @@ model Session {
   data      String
   expiresAt DateTime
 }
-
-/**
- * User Root Directory :- folder.find({parentFolderId: null , userId: user.id })
- */

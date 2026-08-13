@@ -3,3 +3,7 @@ node_modules
 /generated/prisma
 
 /generated/prisma
+
+# Local Netlify folder
+.netlify
+.vercel

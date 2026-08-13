@@ -1,0 +1,13 @@
+{
+	"functions": {
+		"vercel/index.js": {
+			"includeFiles": "views/**"
+		}
+	},
+	"rewrites": [
+		{
+			"source": "/(.*)",
+			"destination": "/vercel/index.js"
+		}
+	]
+}
