@@ -13,6 +13,7 @@ import folderRouter from "./routes/folder.js";
 import fileRouter from "./routes/file.js";
 
 const app = express();
+
 app.set("trust proxy", 1);
 
 const sessionStore = new PrismaSessionStore(prisma, {
@@ -26,6 +27,7 @@ app.use(express.static("public"));
 app.set("views", path.join(process.cwd(), "views"));
 app.set("view engine", "ejs");
 app.use(express.urlencoded({ extended: true }));
+
 app.use(
 	methodOverride((req, res) => {
 		if (req.body && typeof req.body === "object" && "_method" in req.body) {
@@ -39,7 +41,7 @@ app.use(
 app.use(
 	session({
 		cookie: {
-			maxAge: 864000000, // 1 day
+			maxAge: 864000000,
 			httpOnly: true,
 			secure: process.env.NODE_ENV === "production",
 			sameSite: "lax",
@@ -51,8 +53,9 @@ app.use(
 	}),
 );
 
-app.use(passport.initialize());
 app.use(flash());
+
+app.use(passport.initialize());
 app.use(passport.session());
 
 app.use((req, res, next) => {
@@ -70,36 +73,36 @@ app.use((req, res, next) => {
 app.use("/", authRouter);
 app.get("/error", (req, res) => res.render("error"));
 
+// Protected routes middleware (Must come AFTER public routes like /error)
 app.use((req, res, next) => {
 	if (!req.isAuthenticated()) return res.redirect("/sign-in");
 	res.locals.user = req.user;
 	next();
 });
+
 app.use((req, res, next) => {
 	res.set("Cache-Control", "no-store, no-cache, must-revalidate, private");
 	next();
 });
+
 app.use("/", mainRouter);
 app.use("/folder", folderRouter);
 app.use("/file", fileRouter);
 
+// Global Error Handler
 app.use((err, req, res, next) => {
-	console.error(err.message);
-	if (err.stack) console.log(err.stack);
-	if (res.headersSent) {
-		return next(err);
-	}
+	console.error("Server Error:", err.message);
+	if (err.stack) console.error(err.stack);
+	if (res.headersSent) return next(err);
 
 	const errorMessage = err.message || "Internal Server Error";
 	const context = err.cause || {};
 	const redirectRoute = context.route || "/error";
 	const statusCode = context.statusCode || 500;
-	const formValues = context.formValues || null;
-	const errors = context.errors || null;
 
 	req.flash("errorMessage", errorMessage);
-	if (formValues) req.flash("formValues", formValues);
-	if (errors) req.flash("errors", errors);
+	if (context.formValues) req.flash("formValues", context.formValues);
+	if (context.errors) req.flash("errors", context.errors);
 
 	res.status(statusCode).redirect(redirectRoute);
 });
