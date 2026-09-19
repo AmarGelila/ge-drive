@@ -13,9 +13,11 @@ import folderRouter from "./routes/folder.js";
 import fileRouter from "./routes/file.js";
 
 const app = express();
+app.set("trust proxy", 1);
+
 const sessionStore = new PrismaSessionStore(prisma, {
 	sessionModelName: "Session",
-	checkPeriod: 120000,
+	checkPeriod: 0,
 	dbRecordIdFunction: undefined,
 	dbRecordIdIsSessionId: true,
 });
@@ -33,12 +35,14 @@ app.use(
 		}
 	}),
 );
+
 app.use(
 	session({
 		cookie: {
 			maxAge: 864000000, // 1 day
 			httpOnly: true,
 			secure: process.env.NODE_ENV === "production",
+			sameSite: "lax",
 		},
 		secret: process.env.SESSION_SECRET,
 		resave: false,
@@ -46,8 +50,9 @@ app.use(
 		store: sessionStore,
 	}),
 );
-app.use(flash());
 
+app.use(passport.initialize());
+app.use(flash());
 app.use(passport.session());
 
 app.use((req, res, next) => {
@@ -63,6 +68,7 @@ app.use((req, res, next) => {
 });
 
 app.use("/", authRouter);
+app.get("/error", (req, res) => res.render("error"));
 
 app.use((req, res, next) => {
 	if (!req.isAuthenticated()) return res.redirect("/sign-in");
@@ -76,7 +82,6 @@ app.use((req, res, next) => {
 app.use("/", mainRouter);
 app.use("/folder", folderRouter);
 app.use("/file", fileRouter);
-app.get("/error", (req, res) => res.render("error"));
 
 app.use((err, req, res, next) => {
 	console.error(err.message);
