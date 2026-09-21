@@ -13,21 +13,18 @@ import folderRouter from "./routes/folder.js";
 import fileRouter from "./routes/file.js";
 
 const app = express();
-
-app.set("trust proxy", 1);
-
 const sessionStore = new PrismaSessionStore(prisma, {
 	sessionModelName: "Session",
-	checkPeriod: 0,
+	checkPeriod: 120000,
 	dbRecordIdFunction: undefined,
 	dbRecordIdIsSessionId: true,
 });
 
+app.set("trust proxy", 1);
 app.use(express.static("public"));
 app.set("views", path.join(process.cwd(), "views"));
 app.set("view engine", "ejs");
 app.use(express.urlencoded({ extended: true }));
-
 app.use(
 	methodOverride((req, res) => {
 		if (req.body && typeof req.body === "object" && "_method" in req.body) {
@@ -43,7 +40,7 @@ app.use(
 		cookie: {
 			maxAge: 864000000,
 			httpOnly: true,
-			secure: process.env.NODE_ENV === "production",
+			secure: "auto",
 			sameSite: "lax",
 		},
 		secret: process.env.SESSION_SECRET,
@@ -52,11 +49,7 @@ app.use(
 		store: sessionStore,
 	}),
 );
-
 app.use(flash());
-
-app.use(passport.initialize());
-app.use(passport.session());
 
 app.use((req, res, next) => {
 	const flashErrors = req.flash("errors");
@@ -70,18 +63,19 @@ app.use((req, res, next) => {
 	next();
 });
 
-app.use("/", authRouter);
-app.get("/error", (req, res) => res.render("error"));
-
-// Protected routes middleware (Must come AFTER public routes like /error)
 app.use((req, res, next) => {
-	if (!req.isAuthenticated()) return res.redirect("/sign-in");
-	res.locals.user = req.user;
+	res.set("Cache-Control", "no-store, no-cache, must-revalidate, private");
 	next();
 });
 
+app.use(passport.initialize());
+app.use(passport.session());
+app.use("/", authRouter);
+app.get("/error", (req, res) => res.render("error"));
+
 app.use((req, res, next) => {
-	res.set("Cache-Control", "no-store, no-cache, must-revalidate, private");
+	if (!req.isAuthenticated()) return res.redirect("/sign-in");
+	res.locals.user = req.user;
 	next();
 });
 
@@ -89,7 +83,6 @@ app.use("/", mainRouter);
 app.use("/folder", folderRouter);
 app.use("/file", fileRouter);
 
-// Global Error Handler
 app.use((err, req, res, next) => {
 	console.error("Server Error:", err.message);
 	if (err.stack) console.error(err.stack);
