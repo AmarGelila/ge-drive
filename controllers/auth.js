@@ -38,6 +38,7 @@ async function postSignIn(req, res, next) {
 		if (err) return next(err);
 		if (!user) return res.status(401).redirect("/sign-in");
 		req.logIn(user, (loginErr) => {
+			if (loginErr) return next(loginErr);
 			return res.redirect("/");
 		});
 	})(req, res, next);
